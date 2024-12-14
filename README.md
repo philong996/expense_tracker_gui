@@ -12,3 +12,9 @@ python -m venv venv
 ```bash
 python ./src/models/schema.py
 ```
+
+
+- Run the application
+```bash
+python ./main.py
+```
