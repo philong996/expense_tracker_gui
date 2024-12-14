@@ -2,7 +2,6 @@ import unittest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
-from src.models.schema import Base, User
 from src.controllers.user_controller import UserController
 
 class TestUserController(unittest.TestCase):
@@ -24,13 +23,13 @@ class TestUserController(unittest.TestCase):
     def test_create_user(self):
         """Test creating a new user."""
         user = self.user_controller.create_user(
-            username="testuser",
-            email="test@example.com",
+            username="testuser2",
+            email="test2@example.com",
             password_hash="hashed_password",
             role="user"
         )
-        self.assertEqual(user.username, "testuser")
-        self.assertEqual(user.email, "test@example.com")
+        self.assertEqual(user.username, "testuser2")
+        self.assertEqual(user.email, "test2@example.com")
         self.assertEqual(user.role, "user")
 
     def test_create_duplicate_user(self):

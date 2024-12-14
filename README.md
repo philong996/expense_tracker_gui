@@ -8,4 +8,7 @@ docker compose up
 python -m venv venv
 ```
 
-- 
+- Init database
+```bash
+python ./src/models/schema.py
+```

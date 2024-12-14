@@ -30,3 +30,5 @@ class UserController(BaseController):
         if user:
             self.db_session.delete(user)
             self.db_session.commit()
+
+    # def update_user(self, user_id):
