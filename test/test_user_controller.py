@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 from src.controllers.user_controller import UserController
-
+from src.controllers.category_controller import Category
 class TestUserController(unittest.TestCase):
     """User controller tests"""
     def setUp(self):
@@ -64,5 +64,27 @@ class TestUserController(unittest.TestCase):
         self.user_controller.delete_user(delete_user.user_id)
         self.assertIsNone(self.user_controller.get_user(delete_user.user_id))
 
+class Test_Category (unittest.TestCase):
+    def setUp(self):
+        """Set up the test database and session."""
+        # In-memory SQLite database
+        # self.engine = create_engine('sqlite:///:memory:')  
+        self.engine = create_engine("postgresql+psycopg2://postgres:changeme@localhost/expense_gui")  
+        
+        self.Session = sessionmaker(bind=self.engine)
+        self.session = self.Session()
+        self.user_controller = UserController(self.session)
+        
+    def tearDown(self):
+        """Tear down the test database."""
+        self.session.close()
+    
+    def Test_Create_Category (self):
+        Category = self.CategoryController.Create_Category(
+            Category_name = "test 1",
+            description = "test 2",
+            role = "Category"
+        )
+        
 if __name__ == "__main__":
     unittest.main()
