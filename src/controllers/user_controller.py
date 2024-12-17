@@ -24,6 +24,11 @@ class UserController(BaseController):
         user = self.db_session.query(User).filter(User.email == email).first()
         return user
 
+    def get_user_by_username(self, username: str):
+        "Get user by username method"
+        user = self.db_session.query(User).filter(User.username == username).first()
+        return user
+
     def delete_user(self, user_id):
         """Delete user method"""
         user = self.get_user(user_id)
@@ -31,4 +36,15 @@ class UserController(BaseController):
             self.db_session.delete(user)
             self.db_session.commit()
 
-    # def update_user(self, user_id):
+    def validate_user(self, username, password):
+        """Validate user credentials from database."""
+        try:
+            user = self.get_user_by_username(username)
+            if user and user.password_hash == password:
+                return True
+            return False
+        except Exception as e:
+            print(f"Error: {e}")
+            return False
+        finally:
+            self.db_session.close()
