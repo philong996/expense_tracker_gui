@@ -1,4 +1,5 @@
 from src.models.schema import init_db
+from src.views.gui_app import ExpenseApp 
 
 
 def main():
@@ -6,7 +7,10 @@ def main():
     # Initialize the database
     init_db()
 
-    # show menu of class view
+    # Create an instance of the MenuPage
+    app = ExpenseApp()
+    app.mainloop()
+    
 
 if __name__ == "__main__":
     main()
