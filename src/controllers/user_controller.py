@@ -48,3 +48,16 @@ class UserController(BaseController):
             return False
         finally:
             self.db_session.close()
+
+    def update_user_password(self, user_id, new_password_hash):
+        """Update a user's password."""
+        try:
+            user = self.get_user(user_id)
+            if not user:
+                raise Exception(f"User with ID {user_id} not found.")
+            user.password_hash = new_password_hash
+            self.db_session.commit()
+            return user
+        except Exception as e:
+            self.db_session.rollback()
+            raise Exception(f"Failed to update password: {e}")
