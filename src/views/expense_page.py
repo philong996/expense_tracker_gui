@@ -1,19 +1,23 @@
+from datetime import datetime
+import logging
+
 import tkinter as tk
 from tkinter import messagebox
-from src.controllers import ExpenseController
-from src.models.schema import SessionLocal
-from datetime import datetime
 
-class ExpenseLoggingPage(tk.Frame):
+from .base_page import BasePage
+
+class ExpensePage(BasePage):
     """Expense Logging Page to insert expenses into the database."""
 
-    def __init__(self, master, user_id, navigate_to_page):
+    def __init__(self, master, navigate_to_page, logout_callback, expense_controller):
         """
         Initialize the Expense Logging Page.
         """
-        super().__init__(master)
-        self.user_id = user_id  # The ID of the logged-in user
+        super().__init__(master, navigate_to_page, logout_callback)
+        self.logger = logging.getLogger(__name__)
+        self.logger.info("loading the expense page")
         self.navigate_to_page = navigate_to_page
+        self.expense_controller = expense_controller
         self.init_ui()
 
     def init_ui(self):
@@ -72,18 +76,18 @@ class ExpenseLoggingPage(tk.Frame):
             return
 
         # Insert expense via controller
-        session = SessionLocal()
-        controller = ExpenseController(session)
+        # session = SessionLocal()
+        # controller = ExpenseController(session)
         try:
-            controller.create_expense(
-                user_id=self.user_id,
-                amount=amount,
-                description=description,
-                date=date,
-                group_id=group_id,
-                category_id=category_id,
-            )
-            session.commit()
+            # controller.create_expense(
+            #     user_id=self.user_id,
+            #     amount=amount,
+            #     description=description,
+            #     date=date,
+            #     group_id=group_id,
+            #     category_id=category_id,
+            # )
+            # session.commit()
             messagebox.showinfo("Success", "Expense logged successfully!")
             self.clear_inputs()
         except Exception as e:

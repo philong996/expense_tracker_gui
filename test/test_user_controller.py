@@ -65,5 +65,28 @@ class TestUserController(BaseTestCase):
         self.controller.delete_user(delete_user.user_id)
         self.assertIsNone(self.controller.get_user(delete_user.user_id))
 
+    def test_update_user_password(self):
+        """Test updating a user's password."""
+        # Create a user
+        user = self.controller.create_user(
+            username="update_password_user",
+            email="update_password_user@example.com",
+            password_hash="oldpasswordhash"
+        )
+
+        # Update the password
+        updated_user = self.controller.update_user_password(user.user_id, "newpasswordhash")
+        self.assertEqual(updated_user.password_hash, "newpasswordhash")
+
+        # Verify the password was updated in the database
+        retrieved_user = self.controller.get_user(user.user_id)
+        self.assertEqual(retrieved_user.password_hash, "newpasswordhash")
+
+    def test_update_user_password_user_not_found(self):
+        """Test updating the password of a non-existent user."""
+        with self.assertRaises(Exception) as context:
+            self.controller.update_user_password(user_id=999, new_password_hash="newhash")
+        self.assertIn("User with ID 999 not found", str(context.exception))
+
 if __name__ == "__main__":
     unittest.main()
