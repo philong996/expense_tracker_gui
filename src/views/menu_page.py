@@ -1,15 +1,22 @@
-import tkinter as tk
+import logging
 
-class MenuPage(tk.Frame):
+import tkinter as tk
+from .state import AppState
+from .base_page import BasePage
+
+class MenuPage(BasePage):
     """Menu page with buttons, only shows Admin button for admin users."""
 
-    def __init__(self, master, user, navigate_to_page):
+    def __init__(self, master, navigate_to_page, logout_callback):
         """
         Initialize the MenuPage.
         """
-        super().__init__(master)
+        super().__init__(master, navigate_to_page, logout_callback)
+        self.logger = logging.getLogger(__name__)
+        self.logger.info("loading the menu page")
         self.navigate_to_page = navigate_to_page
-        self.user = user
+        self.logout_callback = logout_callback
+        self.state = AppState.get_instance()
         self.init_buttons()
 
     def init_buttons(self):
@@ -23,8 +30,7 @@ class MenuPage(tk.Frame):
         # Buttons
         row_index = 1  # Starting row index
 
-        # Admin button (only if user is admin)
-        if self.user.role == "admin":
+        if self.state.current_user and self.state.current_user.role == "admin":
             admin_button = tk.Button(
                 self, text="Admin", width=20, command=lambda: self.navigate_to_page("admin")
             )
@@ -33,7 +39,9 @@ class MenuPage(tk.Frame):
 
         # Expense Logging button
         expense_logging_button = tk.Button(
-            self, text="Log Expense", width=20, command=lambda: self.navigate_to_page("expense_logging")
+            self, text="Log Expense"
+            , width=20
+            , command=lambda: self.navigate_to_page("expense")
         )
         expense_logging_button.grid(row=row_index, column=0, pady=5)
         row_index += 1
@@ -43,3 +51,7 @@ class MenuPage(tk.Frame):
             self, text="Dashboard", width=20, command=lambda: self.navigate_to_page("dashboard")
         )
         dashboard_button.grid(row=row_index, column=0, pady=5)
+        row_index += 1
+
+        # add the navigation and logout buttons
+        self.add_navigation_buttons()

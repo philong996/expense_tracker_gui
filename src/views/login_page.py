@@ -1,14 +1,12 @@
 import tkinter as tk
 from tkinter import messagebox
 
-from src.controllers.user_controller import UserController
-from src.models.schema import SessionLocal
-
 class LoginPage(tk.Frame):
     """Login Page to validate user credentials."""
-    def __init__(self, master, on_login_success):
+    def __init__(self, master, user_controller, on_login_success):
         super().__init__(master)
         self.on_login_success = on_login_success  # Callback for successful login
+        self.user_controller = user_controller
         self.init_ui()
 
     def init_ui(self):
@@ -32,11 +30,9 @@ class LoginPage(tk.Frame):
         username = self.username_entry.get()
         password = self.password_entry.get()
 
-        session = SessionLocal()
-        user_controller = UserController(session)
-        if user_controller.validate_user(username, password):
-            user = user_controller.get_user_by_username(username)
-            self.on_login_success(user)
+        if self.user_controller.validate_user(username, password):
+            user = self.user_controller.get_user_by_username(username)
             messagebox.showinfo("Login Successful", f"Welcome, {username}!")
+            self.on_login_success(user)
         else:
             messagebox.showerror("Login Failed", "Invalid Username or Password")
