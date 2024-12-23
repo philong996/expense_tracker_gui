@@ -14,8 +14,6 @@ class MenuPage(BasePage):
         super().__init__(master, navigate_to_page, logout_callback)
         self.logger = logging.getLogger(__name__)
         self.logger.info("loading the menu page")
-        self.navigate_to_page = navigate_to_page
-        self.logout_callback = logout_callback
         self.state = AppState.get_instance()
         self.init_buttons()
 

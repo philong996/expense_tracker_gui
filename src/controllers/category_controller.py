@@ -7,7 +7,7 @@ class CategoryController(BaseController):
     """Controller to manage User-related operations (CRUD)"""
     def create_category(self, category_name, description):
         "Create category method"
-        new_category = Category (category_name=category_name, description=description)
+        new_category = Category(category_name=category_name, description=description)
         try:
             self.db_session.add(new_category)
             self.db_session.commit()
@@ -26,7 +26,9 @@ class CategoryController(BaseController):
         if category:
             self.db_session.delete(category)
             self.db_session.commit()
+
     def update_category(self, category_id, category_name =None, description=None):
+        "Update the category name or description"
         category_update= self.get_category_by_id(category_id)
         try:
             if not category_update:
@@ -40,3 +42,7 @@ class CategoryController(BaseController):
         except SQLAlchemyError as e:
             self.db_session.rollback()
             raise Exception(f"Failse to update category: {e}")
+
+    def get_all_categories(self):
+        """Fetch all categories from the database."""
+        return self.db_session.query(Category).all()

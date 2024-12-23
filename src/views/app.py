@@ -2,7 +2,7 @@ import logging
 import tkinter as tk
 from tkinter import messagebox
 
-from src.views import AdminPage, LoginPage, MenuPage, ExpensePage, CategoryPage
+from src.views import AdminPage, LoginPage, MenuPage, ExpensePage, CategoryPage, DashboardPage
 from src.controllers import UserController, ExpenseController, CategoryController
 from .state import AppState
 
@@ -50,10 +50,20 @@ class ExpenseApp(tk.Tk):
                 self.container, self.show_page, self.logout, self.user_controller)
         elif page_name == "expense":
             self.current_page = ExpensePage(
-                self.container, self.show_page, self.logout, self.expense_controller)
+                self.container
+                , self.show_page
+                , self.logout
+                , self.expense_controller
+                , self.category_controller)
         elif page_name == "category":
             self.current_page = CategoryPage(
-                self.container, self.show_page, self.logout)
+                self.container, self.show_page, self.logout, self.category_controller)
+        elif page_name == "dashboard":
+            self.current_page = DashboardPage(
+                self.container
+                , self.show_page
+                , self.logout
+                , self.expense_controller)
         else:
             messagebox.showwarning("Navigation", "Unknown page!")
             return
