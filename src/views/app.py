@@ -2,8 +2,8 @@ import logging
 import tkinter as tk
 from tkinter import messagebox
 
-from src.views import AdminPage, LoginPage, MenuPage, ExpensePage
-from src.controllers import UserController, ExpenseController
+from src.views import AdminPage, LoginPage, MenuPage, ExpensePage, CategoryPage
+from src.controllers import UserController, ExpenseController, CategoryController
 from .state import AppState
 
 class ExpenseApp(tk.Tk):
@@ -32,6 +32,7 @@ class ExpenseApp(tk.Tk):
         self.db_session = db_session
         self.user_controller = UserController(self.db_session)
         self.expense_controller = ExpenseController(self.db_session)
+        self.category_controller = CategoryController(self.db_session)
 
         self.current_page = None
         self.show_page('login')
@@ -50,6 +51,9 @@ class ExpenseApp(tk.Tk):
         elif page_name == "expense":
             self.current_page = ExpensePage(
                 self.container, self.show_page, self.logout, self.expense_controller)
+        elif page_name == "category":
+            self.current_page = CategoryPage(
+                self.container, self.show_page, self.logout)
         else:
             messagebox.showwarning("Navigation", "Unknown page!")
             return
