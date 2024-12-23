@@ -36,7 +36,13 @@ class MenuPage(BasePage):
             )
             admin_button.grid(row=row_index, column=0, pady=5)
             row_index += 1  # Move to the next row
-
+            
+            category_button = tk.Button(
+                self, text="Category", width=20, command=lambda: self.navigate_to_page("category")
+            )
+            category_button.grid(row=row_index, column=0, pady=5)
+            row_index += 1  # Move to the next row
+            
         # Expense Logging button
         expense_logging_button = tk.Button(
             self, text="Log Expense"

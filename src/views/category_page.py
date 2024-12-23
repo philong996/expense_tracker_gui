@@ -1,12 +1,16 @@
 import tkinter as tk
+import logging
+
 from tkinter import messagebox
 from src.controllers.category_controller import CategoryController
 from src.models.schema import SessionLocal
 
-
-class CategoryPage(tk.Frame):
-    def __init__(self, master, navigate_to_page):
-        super().__init__(master)
+from .base_page import BasePage
+class CategoryPage(BasePage):
+    def __init__(self, master, navigate_to_page, logout_callback):
+        super().__init__(master, navigate_to_page, logout_callback)
+        self.logger = logging.getLogger(__name__)
+        self.logger.info("loading the expense page")
         self.navigate_to_page = navigate_to_page
         self.init_ui()
     
@@ -26,12 +30,10 @@ class CategoryPage(tk.Frame):
         log_button = tk.Button(self, text="Log Category", command=self.log_category)
         log_button.grid(row=6, column=0, columnspan=2, pady=10)
 
-        back_button = tk.Button(self, 
-                                text="Back to Menu",
-                                command=lambda: self.navigate_to_page("menu")
-                                )
-        back_button.grid(row=7, column=0, columnspan=2, pady=5)
-    
+        
+        # add the navigation and logout buttons
+        self.add_navigation_buttons()
+
     def log_category(self):
         """Validate inputs and save the Category to the database."""
         # Retrieve values from inputs
