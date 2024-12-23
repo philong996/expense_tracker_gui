@@ -2,14 +2,16 @@ from datetime import datetime
 import logging
 
 import tkinter as tk
+from tkinter import ttk
 from tkinter import messagebox
 
+from .state import AppState
 from .base_page import BasePage
 
 class ExpensePage(BasePage):
     """Expense Logging Page to insert expenses into the database."""
 
-    def __init__(self, master, navigate_to_page, logout_callback, expense_controller):
+    def __init__(self, master, navigate_to_page, logout_callback, expense_controller, category_controller):
         """
         Initialize the Expense Logging Page.
         """
@@ -17,7 +19,10 @@ class ExpensePage(BasePage):
         self.logger = logging.getLogger(__name__)
         self.logger.info("loading the expense page")
         self.navigate_to_page = navigate_to_page
+        self.state = AppState.get_instance()
         self.expense_controller = expense_controller
+        self.category_controller = category_controller
+        self.categories = {}
         self.init_ui()
 
     def init_ui(self):
@@ -41,16 +46,28 @@ class ExpensePage(BasePage):
         self.date_entry.insert(0, datetime.now().strftime("%Y-%m-%d"))  # Default to today's date
         self.date_entry.grid(row=3, column=1, padx=5, pady=5)
 
-        # Category ID Input
-        tk.Label(self, text="Category name:").grid(row=5, column=0, sticky="e", padx=5, pady=5)
-        self.category_id_entry = tk.Entry(self)
-        self.category_id_entry.grid(row=5, column=1, padx=5, pady=5)
+        # Category Selection
+        tk.Label(self, text="Category:").grid(row=4, column=0, sticky="e", padx=5, pady=5)
+        self.category_combobox = ttk.Combobox(self, state="readonly")
+        self.category_combobox.grid(row=4, column=1, padx=5, pady=5)
+        self.load_categories()
 
         # Buttons
         log_button = tk.Button(self, text="Log Expense", command=self.log_expense)
         log_button.grid(row=6, column=0, columnspan=2, pady=10)
 
         self.add_navigation_buttons()
+
+    def load_categories(self):
+        """Load categories from the database into the combobox."""
+        try:
+            categories = self.category_controller.get_all_categories()
+            self.categories = {category.category_name: category.category_id for category in categories}
+            self.category_combobox["values"] = list(self.categories.keys())
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to load categories: {e}")
+            self.logger.error(f"Error loading categories: {e}")
+
 
     def log_expense(self):
         """Validate inputs and save the expense to the database."""
@@ -60,8 +77,9 @@ class ExpensePage(BasePage):
             amount = float(self.amount_entry.get())
             description = self.description_entry.get()
             date = self.date_entry.get()
-            group_id = self.state.current_user.user_id
-            category_id = int(self.category_id_entry.get()) if self.category_id_entry.get() else None
+            group_id = None
+            category_name = self.category_combobox.get()
+            category_id = self.categories.get(category_name) if category_name else None
         except ValueError:
             messagebox.showerror(
                 "Input Error", 
@@ -70,8 +88,8 @@ class ExpensePage(BasePage):
 
         # Insert expense via controller
         try:
-            self.controller.create_expense(
-                user_id=self.user_id,
+            self.expense_controller.create_expense(
+                user_id=user_id,
                 amount=amount,
                 description=description,
                 date=date,
@@ -82,7 +100,6 @@ class ExpensePage(BasePage):
             self.clear_inputs()
         except Exception as e:
             messagebox.showerror("Error", f"Failed to log expense: {e}")
-        finally:
 
     def clear_inputs(self):
         """Clear all input fields."""
@@ -90,4 +107,4 @@ class ExpensePage(BasePage):
         self.description_entry.delete(0, tk.END)
         self.date_entry.delete(0, tk.END)
         self.date_entry.insert(0, datetime.now().strftime("%Y-%m-%d"))
-        self.category_id_entry.delete(0, tk.END)
+        self.category_combobox.set("")

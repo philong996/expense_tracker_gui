@@ -1,4 +1,5 @@
-from src.models.schema import Expense
+from sqlalchemy import func
+from src.models.schema import Category, Expense
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 from src.controllers.base import BaseController
@@ -96,3 +97,20 @@ class ExpenseController(BaseController):
             query = query.filter_by(category_id=category_id)
 
         return query.all()
+
+    def get_total_expenses(self, user_id):
+        """Calculate the total expenses for a user."""
+        result = self.db_session.query(func.sum(Expense.amount)).filter(Expense.user_id == user_id).scalar()
+        return result or 0.0
+
+    def get_expenses_by_category(self, user_id):
+        """Group expenses by category for a user."""
+        results = (
+            self.db_session.query(Category.category_name, func.sum(Expense.amount))
+            .join(Expense, Category.category_id == Expense.category_id)
+            .filter(Expense.user_id == user_id)
+            .group_by(Category.category_name)
+            .all()
+        )
+        return results
+

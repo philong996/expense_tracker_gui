@@ -51,6 +51,10 @@ class AdminPage(BasePage):
         username = self.username_input.get()
         password = self.password_input.get()
         if username and password:
+            self.user_controller.create_user(
+                username=username
+                , email=f"{username}@example.com"
+                , password_hash=password)
             messagebox.showinfo("Success", f"User {username} added.")
         else:
             messagebox.showerror("Error", "Please enter both username and password.")
@@ -58,18 +62,37 @@ class AdminPage(BasePage):
     def delete_user(self):
         """ Delete user functionality"""
         username = self.username_input.get()
-        if username:
-            messagebox.showinfo("Success", f"User {username} deleted.")
-        else:
+
+        if not username:
             messagebox.showerror("Error", "Please enter a username to delete.")
+            return
+
+        try:
+            user = self.user_controller.get_user_by_username(username)
+            if user:
+                self.user_controller.delete_user(user.user_id)
+                messagebox.showinfo("Success", f"User {username} deleted successfully!")
+            else:
+                messagebox.showerror("Error", f"User {username} not found.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to delete user: {e}")
 
     def reset_password(self):
         """Reset password functionality"""
         username = self.username_input.get()
-        password = self.password_input.get()
-        if username and password:
-            
-            messagebox.showinfo("Success", f"Password for {username} reset.")
-        else:
+        new_password = self.password_input.get()
+
+        if not username or not new_password:
             messagebox.showerror("Error", "Please enter both username and new password.")
+            return
+
+        try:
+            user = self.user_controller.get_user_by_username(username)
+            if user:
+                self.user_controller.update_user_password(user.user_id, new_password)
+                messagebox.showinfo("Success", f"Password for {username} reset successfully!")
+            else:
+                messagebox.showerror("Error", f"User {username} not found.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to reset password: {e}")
 

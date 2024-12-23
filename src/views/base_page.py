@@ -13,7 +13,7 @@ class BasePage(tk.Frame):
         "Util function to add navigation buttons and logout"
         # Navigation Buttons
         nav_frame = tk.Frame(self)
-        nav_frame.grid(row=6, column=0, columnspan=2, pady=10, sticky="ew")
+        nav_frame.grid(row=7, column=0, columnspan=2, pady=10, sticky="ew")
 
         back_button = tk.Button(
             nav_frame
